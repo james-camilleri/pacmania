@@ -3,7 +3,6 @@ import java.util.HashMap;
 
 class Cell {
   float size;
-  // Walls walls;
   Map<Wall, float[]> walls;
   boolean visited = false;
   boolean hasCoin = true;
@@ -26,10 +25,14 @@ class Cell {
     walls.put(Wall.FRONT, new float[]{ radians(90), 0 });
     walls.put(Wall.BACK, new float[]{ radians( -90), 0 });
     walls.put(Wall.LEFT, new float[]{ 0, radians(90) });
-    // walls.put(Wall.UP, new float[]{ radians(180), 0 });
+    walls.put(Wall.UP, new float[]{ radians(180), 0 });
     walls.put(Wall.DOWN, new float[]{ 0, 0 });
     
     return walls;
+  }
+  
+  void removeWall(Wall wall) {
+    walls.remove(wall);
   }
   
   void visit() {
@@ -47,7 +50,9 @@ class Cell {
     drawWalls();
     
     if (!visited) {
+      noStroke();
       fill(255, 255, 0, 255);
+      
       // coinSize = coinSize >= 3 ? 1 : coinSize + 0.1;
       sphere(coinSize);
     }
