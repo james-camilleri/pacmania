@@ -51,7 +51,7 @@ class Cell {
     
     if (!visited) {
       noStroke();
-      fill(255, 255, 0, 255);
+      fill(255, 0, 0, 255);
       
       // coinSize = coinSize >= 3 ? 1 : coinSize + 0.1;
       sphere(coinSize);
