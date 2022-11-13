@@ -1,4 +1,4 @@
-public enum Wall {
+public enum Direction {
   FRONT,
   RIGHT,
   BACK,
@@ -6,7 +6,7 @@ public enum Wall {
   UP,
   DOWN;
   
-  public Wall opposite() {
+  public Direction opposite() {
     switch(this) {
       case FRONT : return BACK;
         case RIGHT : return LEFT;
@@ -20,11 +20,11 @@ public enum Wall {
     }
   }
   
-  public static Wall between(CellIndex cellA, CellIndex cellB) {
+  public static Direction between(CellIndex cellA, CellIndex cellB) {
     if (cellA.x == cellB.x + 1) return LEFT;
     if (cellA.x == cellB.x - 1) return RIGHT;
-    if (cellA.y == cellB.y + 1) return BACK;
-    if (cellA.y == cellB.y - 1) return FRONT;
+    if (cellA.y == cellB.y + 1) return FRONT;
+    if (cellA.y == cellB.y - 1) return BACK;
     if (cellA.z == cellB.z + 1) return DOWN;
     if (cellA.z == cellB.z - 1) return UP;
     
