@@ -1,7 +1,8 @@
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.function.Predicate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 class Grid {
   int size;
@@ -29,7 +30,7 @@ class Grid {
       }
     }
 
-    generateMazeData();
+    generateMaze();
   }
 
   private CellIndex getRandomIndex() {
@@ -49,7 +50,6 @@ class Grid {
     int x = index.x;
     int y = index.y;
     int z = index.z;
-
 
     if (index.x != 0) { adjacent.add(new CellIndex(x - 1, y, z)); }
     if (index.x != width - 1) { adjacent.add(new CellIndex(x + 1, y, z)); }
@@ -73,7 +73,7 @@ class Grid {
   }
 
   // Implements Prim's algorithm for random maze generation in 3 dimensions.
-  private void generateMazeData() {
+  private void generateMaze() {
     boolean[][][] processedForMaze = new boolean[width][height][depth];
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
@@ -95,7 +95,7 @@ class Grid {
       List<CellIndex> adjacentCells = getAdjacentCells(frontierCell, processedForMaze, Status.PROCESSED);
       CellIndex processedNeighbour = adjacentCells.get(int(random(adjacentCells.size())));
 
-      Wall wallToRemove = Wall.between(processedNeighbour, frontierCell);
+      Direction wallToRemove = Direction.between(processedNeighbour, frontierCell);
       cells[processedNeighbour.x][processedNeighbour.y][processedNeighbour.z].removeWall(wallToRemove);
       cells[frontierCell.x][frontierCell.y][frontierCell.z].removeWall(wallToRemove.opposite());
 
@@ -104,16 +104,23 @@ class Grid {
     }
   }
 
-  // TODO: We're getting empty arrays from this occasionally, which shouldn't happen.
   ArrayList<CellIndex> getAdjacentCells(CellIndex cell) {
     ArrayList<CellIndex> adjacent = getAllAdjacentCells(cell);
     adjacent.removeIf(
-      adjacentCell -> cells[adjacentCell.x][adjacentCell.y][adjacentCell.z]
-        .walls
-        .containsKey(Wall.between(cell, adjacentCell))
+      adjacentCell ->
+        cells[cell.x][cell.y][cell.z]
+          .walls
+          .containsKey(Direction.between(cell, adjacentCell))
     );
 
     return adjacent;
+  }
+
+  Optional<CellIndex> getAdjacentCell(CellIndex cell, Direction direction) {
+    ArrayList<CellIndex> adjacent = getAdjacentCells(cell);
+    adjacent.removeIf(adjacentCell -> Direction.between(cell, adjacentCell) == direction);
+
+    return adjacent.size() == 0 ? Optional.empty() : Optional.of(adjacent.get(0));
   }
 
   void draw() {

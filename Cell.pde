@@ -3,41 +3,43 @@ import java.util.HashMap;
 
 class Cell {
   float size;
-  Map<Wall, float[]> walls;
+  Map<Direction, float[]> walls;
   boolean visited = false;
   boolean hasCoin = true;
   // float coinSize = random(1, 4);
   float coinSize = 3;
+  int opacity = 0;
   
   Cell(float _size) {
     size = _size;
     walls = generateWalls();
   }
   
-  private Map<Wall, float[]> generateWalls() {
-    Map<Wall, float[]> walls = new HashMap<Wall, float[]>(6, 0.1);
+  private Map<Direction, float[]> generateWalls() {
+    Map<Direction, float[]> walls = new HashMap<Direction, float[]>(6, 0.1);
     
     // Walls are all the same size, and offset,
     // all we need to store is the rotations (x, y)
     // for looping through when drawing.
     // The "default" wall is in the "down" position.
-    walls.put(Wall.RIGHT, new float[]{ 0, radians( -90) });
-    walls.put(Wall.FRONT, new float[]{ radians(90), 0 });
-    walls.put(Wall.BACK, new float[]{ radians( -90), 0 });
-    walls.put(Wall.LEFT, new float[]{ 0, radians(90) });
-    walls.put(Wall.UP, new float[]{ radians(180), 0 });
-    walls.put(Wall.DOWN, new float[]{ 0, 0 });
+    walls.put(Direction.RIGHT, new float[]{ 0, radians( -90) });
+    walls.put(Direction.FRONT, new float[]{ radians( -90), 0 });
+    walls.put(Direction.BACK, new float[]{ radians(90), 0 });
+    walls.put(Direction.LEFT, new float[]{ 0, radians(90) });
+    walls.put(Direction.UP, new float[]{ radians(180), 0 });
+    walls.put(Direction.DOWN, new float[]{ 0, 0 });
     
     return walls;
   }
   
-  void removeWall(Wall wall) {
+  void removeWall(Direction wall) {
     walls.remove(wall);
   }
   
   void visit() {
     visited = true;
     hasCoin = false;
+    opacity += 5;
   }
   
   void draw() {
@@ -48,6 +50,7 @@ class Cell {
     translate(size / 2, size / 2, size / 2);
     
     drawWalls();
+    drawFill();
     
     if (!visited) {
       noStroke();
@@ -70,5 +73,10 @@ class Cell {
       box(size, size, 1);
       popMatrix();
     });
+  }
+  
+  void drawFill() {
+    fill(255, 127, 0, opacity);
+    box(size, size, size);
   }
 }

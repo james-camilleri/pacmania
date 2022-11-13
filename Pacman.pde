@@ -5,6 +5,7 @@ class Pacman {
   int cellSize;
   PVector position;
   CellIndex target;
+  Direction currentDirection;
   
   Pacman(Grid _grid, CellIndex start) {
     grid = _grid;
@@ -15,8 +16,34 @@ class Pacman {
   }
   
   private void updateTarget() {
-    ArrayList<CellIndex> accessibleCells = grid.getAdjacentCells(target);
-    target = accessibleCells.get(int(random(accessibleCells.size())));
+    CellIndex lastTarget = target;
+    
+    ArrayList<CellIndex> targetCells = grid.getAdjacentCells(lastTarget);
+    
+    ArrayList<CellIndex> unvisitedTargetCells = (ArrayList<CellIndex>)targetCells.clone();
+    unvisitedTargetCells.removeIf(cell -> grid.cells[cell.x][cell.y][cell.z].visited);
+    
+    if (unvisitedTargetCells.size() > 0) {
+      target = unvisitedTargetCells.get(int(random(unvisitedTargetCells.size())));
+      currentDirection = Direction.between(target, lastTarget);
+      return;
+    }
+    
+    // If there are no unvisited adjacent cells,
+    // prefer maintaining the current direction.
+    // If that's not possible, pick a direction at random.
+    if (currentDirection != null && random(1) > 0.5) {
+      Optional<CellIndex> sameDirectionCell = grid.getAdjacentCell(lastTarget, currentDirection);
+      
+      if (sameDirectionCell.isPresent()) {
+        target = sameDirectionCell.get();
+        currentDirection = Direction.between(target, lastTarget);
+        return;
+      }
+    }
+    
+    target = targetCells.get(int(random(targetCells.size())));
+    currentDirection = Direction.between(target, lastTarget);
   }
   
   void move() {
@@ -24,7 +51,7 @@ class Pacman {
       position.x == (target.x * cellSize) && 
       position.y == (target.y * cellSize) && 
       position.z == (target.z * cellSize)
-     ){
+     ) {
       updateTarget();
       grid.cells[target.x][target.y][target.z].visit();
     }
