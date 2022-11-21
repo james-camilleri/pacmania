@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+final boolean EXTERNAL_WALLS = false;
+
 class Grid {
   int size;
   int width;
@@ -11,6 +13,7 @@ class Grid {
   int depth;
   int scale;
   Cell[][][] cells;
+  KdTree unvistedCells;
 
   Grid(int _size, int _scale) {
     size = _size;
@@ -22,15 +25,35 @@ class Grid {
     depth = size;
 
     cells = new Cell[width][height][depth];
+    List<KdTree.XYZPoint> cellIndices = new ArrayList<KdTree.XYZPoint>();
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
         for (int z = 0; z < depth; z++) {
           cells[x][y][z] = new Cell(scale);
+
+          if (!EXTERNAL_WALLS) {
+            removeExternalWalls(cells[x][y][z], new CellIndex(x, y, z));
+          }
+
+          cellIndices.add(new KdTree.XYZPoint(x, y, z));
         }
       }
     }
 
+    unvistedCells = new KdTree(cellIndices);
+    println(unvistedCells);
+    println(unvistedCells.size());
+
     generateMaze();
+  }
+
+  private void removeExternalWalls(Cell cell, CellIndex index) {
+    if (index.x == 0) { cell.removeWall(Direction.LEFT); }
+    if (index.x == width - 1) { cell.removeWall(Direction.RIGHT); }
+    if (index.y == 0) { cell.removeWall(Direction.FRONT); }
+    if (index.y == height - 1) { cell.removeWall(Direction.BACK); }
+    if (index.z == 0) { cell.removeWall(Direction.DOWN); }
+    if (index.z == depth - 1) { cell.removeWall(Direction.UP); }
   }
 
   private CellIndex getRandomIndex() {
