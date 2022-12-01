@@ -201,13 +201,13 @@ class Grid {
     println();
   }
 
-  void draw() {
+  void draw(boolean drawWalls) {
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
         for (int z = 0; z < depth; z++) {
           pushMatrix();
           translate(x * scale, y * scale, z * scale);
-          cells[x][y][z].draw();
+          cells[x][y][z].draw(drawWalls);
           popMatrix();
         }
       }

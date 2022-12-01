@@ -49,14 +49,17 @@ class Cell {
     opacity += 5;
   }
   
-  void draw() {
+  void draw(boolean drawWalls) {
     // Not sure if we need this, but there are occlusion errors without it.
     hint(DISABLE_DEPTH_TEST);
     
     // Translate to centre of cell.
     translate(size / 2, size / 2, size / 2);
     
-    drawWalls();
+    if (drawWalls) {
+      drawWalls();
+    }
+    
     drawFill();
     
     if (!visited) {
