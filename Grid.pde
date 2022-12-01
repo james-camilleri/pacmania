@@ -21,14 +21,14 @@ class Grid {
   // converts all this into an inner class.
   float visitedId;
 
-  Grid(int _size, int _scale) {
+  Grid(int _size, int _scale, boolean flat) {
     size = _size;
     scale = _scale;
 
     // Set these separately so we can debug in smaller subsections if necessary.
     width = size;
     height = size;
-    depth = size;
+    depth = flat ? 1 : size;
 
     cells = new Cell[width][height][depth];
     List<KdTree.XYZPoint> cellIndices = new ArrayList<KdTree.XYZPoint>();

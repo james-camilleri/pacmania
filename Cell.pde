@@ -49,16 +49,12 @@ class Cell {
   }
   
   void updateColour(float _hue, int _opacity) {
-    opacity += _opacity;
-    
     hue = _hue;
-    // hue = hue == -1
-    //   ? _hue
-    //   :
+    updateColour(_opacity);
   }
   
   void updateColour(int _opacity) {
-    opacity += _opacity;
+    opacity = min(max(opacity + _opacity, 0), 30);
   }
   
   void draw(boolean drawWalls, boolean drawFill) {
@@ -101,7 +97,7 @@ class Cell {
   void drawFill() {
     noStroke();
     colorMode(HSB);
-    fill(hue, 255, 200, min(max(opacity, 0), 30));
+    fill(hue, 255, 200, opacity);
     box(size * 0.8, size * 0.8, size * 0.8);
     colorMode(RGB);
   }
