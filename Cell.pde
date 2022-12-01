@@ -49,7 +49,7 @@ class Cell {
   }
   
   void updateColour(float _hue, int _opacity) {
-    hue = _hue;
+    hue += (_hue - hue) / 2;
     updateColour(_opacity);
   }
   

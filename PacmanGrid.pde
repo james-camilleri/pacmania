@@ -19,15 +19,23 @@ void settings() {
   size(WIDTH, HEIGHT, P3D);
 }
 
+CellIndex randomLocation() {
+  int x = int(random(0, GRID_SIZE));
+  int y = int(random(0, GRID_SIZE));
+  int z = GRID_FLAT ? 0 : int(random(0, GRID_SIZE));
+  
+  return new CellIndex(x, y, z);
+}
+
 void setup() {
   float centre = (GRID_SCALE * GRID_SIZE) / 2;
   camera = new PeasyCam(this, centre, centre, GRID_FLAT ? 0 : centre, 1000);
   
   for (int i = 0; i < ghosts.length; i++) {
-    ghosts[i] = new Ghost(grid, new CellIndex(GRID_SIZE - 1, GRID_SIZE - 1, 0));
+    ghosts[i] = new Ghost(grid, randomLocation());
   }
   
-  pacman = new Pacman(grid, new CellIndex(0, 0, 0), ghosts);
+  pacman = new Pacman(grid, randomLocation(), ghosts);
 }
 
 void keyPressed() {
@@ -47,6 +55,8 @@ void keyPressed() {
 void draw() {
   background(0, 0, 0, 1);
   
+  grid.draw(drawWalls, drawFill);
+  
   for (int i = 0; i < ghosts.length; i++) {
     ghosts[i].move();
     
@@ -57,6 +67,4 @@ void draw() {
   
   pacman.move();
   pacman.draw();
-  
-  grid.draw(drawWalls, drawFill);
 }

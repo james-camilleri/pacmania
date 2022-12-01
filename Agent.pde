@@ -103,14 +103,14 @@ abstract class Agent {
     // Translate to centre of cell.
     translate(cellSize / 2, cellSize / 2, cellSize / 2);
 
+    if (drawPath) {
+      drawPath();
+    }
+
     pushMatrix();
     translate(position.x, position.y, position.z);
     drawAgent();
     popMatrix();
-
-    if (drawPath) {
-      drawPath();
-    }
 
     popMatrix();
   }
