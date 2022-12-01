@@ -8,6 +8,7 @@ class Cell {
   boolean hasCoin = true;
   float coinSize = 3;
   int opacity = 0;
+  float hue = -1;
   
   // We need to mark cells as visited for our Depth-First Search. In order to
   // avoid cloning the entire grid and/or resetting an additional flag on each
@@ -45,10 +46,22 @@ class Cell {
   void visit() {
     visited = true;
     hasCoin = false;
-    opacity += 5;
   }
   
-  void draw(boolean drawWalls) {
+  void updateColour(float _hue, int _opacity) {
+    opacity += _opacity;
+    
+    hue = _hue;
+    // hue = hue == -1
+    //   ? _hue
+    //   :
+  }
+  
+  void updateColour(int _opacity) {
+    opacity += _opacity;
+  }
+  
+  void draw(boolean drawWalls, boolean drawFill) {
     // Not sure if we need this, but there are occlusion errors without it.
     hint(DISABLE_DEPTH_TEST);
     
@@ -59,7 +72,9 @@ class Cell {
       drawWalls();
     }
     
-    drawFill();
+    if (drawFill) {
+      drawFill();
+    }
     
     if (!visited) {
       noStroke();
@@ -84,8 +99,10 @@ class Cell {
   }
   
   void drawFill() {
-    noFill();
     noStroke();
-    box(size, size, size);
+    colorMode(HSB);
+    fill(hue, 255, 200, min(max(opacity, 0), 30));
+    box(size * 0.8, size * 0.8, size * 0.8);
+    colorMode(RGB);
   }
 }

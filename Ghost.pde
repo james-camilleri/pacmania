@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 class Ghost extends Agent {
-  float hue = random(100, 200);
+  float hue = random(150, 255);
   
   Ghost(Grid _grid, CellIndex start) {
     super(_grid, start);
@@ -46,5 +46,9 @@ class Ghost extends Agent {
       popMatrix();
     }
     colorMode(RGB);
+  }
+  
+  protected void updateVisitedCellColour() {
+    grid.cells[target.x][target.y][target.z].updateColour(hue, 5);
   }
 }

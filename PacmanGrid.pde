@@ -10,8 +10,9 @@ Grid grid = new Grid(GRID_SIZE, GRID_SCALE);
 Pacman pacman;
 Ghost[] ghosts = new Ghost[int(pow(GRID_SIZE, 3)) / 10];
 
-boolean drawWalls = true;
 boolean drawGhosts = true;
+boolean drawFill = true;
+boolean drawWalls = true;
 
 void settings() {
   size(WIDTH, HEIGHT, P3D);
@@ -29,17 +30,21 @@ void setup() {
 }
 
 void keyPressed() {
+  if (key == 'g') {
+    drawGhosts = !drawGhosts;
+  }
+  
   if (key == 'w') {
     drawWalls = !drawWalls;
   }
-  if (key == 'g') {
-    drawGhosts = !drawGhosts;
+  
+  if (key == 'f') {
+    drawFill = !drawFill;
   }
 }
 
 void draw() {
   background(0, 0, 0, 1);
-  grid.draw(drawWalls);
   
   for (int i = 0; i < ghosts.length; i++) {
     ghosts[i].move();
@@ -51,4 +56,6 @@ void draw() {
   
   pacman.move();
   pacman.draw();
+  
+  grid.draw(drawWalls, drawFill);
 }

@@ -21,7 +21,7 @@ class Pacman extends Agent {
         abs(cell.x * cellSize - position.x) < cellSize && 
         abs(cell.y * cellSize - position.y) < cellSize && 
         abs(cell.z * cellSize - position.z) < cellSize
-       ) {
+       ){
         return true;
       }
     }
@@ -126,5 +126,9 @@ class Pacman extends Agent {
     fill(255, 255, 0, 255);
     noStroke();
     sphere(cellSize / 4);
+  }
+  
+  protected void updateVisitedCellColour() {
+    grid.cells[target.x][target.y][target.z].updateColour( -5);
   }
 }

@@ -58,6 +58,10 @@ abstract class Agent {
     throw new RuntimeException("`updateTarget` must be overridden by a base class.");
   }
 
+  protected void updateVisitedCellColour() {
+    throw new RuntimeException("`updateVisitedCellColour` must be overridden by a base class.");
+  }
+
   void move() {
     if (
       position.x == (target.x * cellSize) &&
@@ -68,6 +72,8 @@ abstract class Agent {
         grid.cells[target.x][target.y][target.z].visit();
         grid.unvistedCells.remove(new KdTree.XYZPoint(target.x, target.y, target.z));
       }
+
+      updateVisitedCellColour();
 
       if (grid.unvistedCells.size() == 0) {
         return;
@@ -84,12 +90,12 @@ abstract class Agent {
     position.add(direction.mult(distance));
   }
 
-  protected void drawPath() {
-    throw new RuntimeException("`drawPath` must be overridden by a base class.");
-  }
-
   protected void drawAgent() {
     throw new RuntimeException("`drawAgent` must be overridden by a base class.");
+  }
+
+  protected void drawPath() {
+    throw new RuntimeException("`drawPath` must be overridden by a base class.");
   }
 
   void draw() {
