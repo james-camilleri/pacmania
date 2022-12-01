@@ -71,7 +71,6 @@ class Cell {
   void drawWalls() {
     walls.values().forEach(wall -> {
       stroke(255, 127, 0, 10);
-      // noStroke();
       fill(255, 255, 255, 5);
       
       pushMatrix();
@@ -84,7 +83,6 @@ class Cell {
   }
   
   void drawFill() {
-    // fill(255, 127, 0, opacity);
     noFill();
     noStroke();
     box(size, size, size);

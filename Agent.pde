@@ -3,13 +3,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 
-final float SPEED = 5;
-
 abstract class Agent {
   Grid grid;
   int cellSize;
   PVector position;
   CellIndex target;
+  float speed;
   Deque<CellIndex> route;
   Direction currentDirection;
   Map<PathSegment, Integer> paths;
@@ -20,10 +19,14 @@ abstract class Agent {
   Agent(Grid _grid, CellIndex start) {
     grid = _grid;
     cellSize = grid.scale;
-    position = new PVector((float)start.x, (float)start.y, (float)start.z);
+    position = new PVector(start.x * cellSize, start.y * cellSize, start.z * cellSize);
     target = start;
+    speed = 5;
     paths = new HashMap<PathSegment, Integer>();
-    grid.cells[target.x][target.y][target.z].visit();
+
+    if (canVisit) {
+      grid.cells[target.x][target.y][target.z].visit();
+    }
   }
 
   protected CellIndex findClosestUnvistedCell(CellIndex currentPosition) {
@@ -46,50 +49,13 @@ abstract class Agent {
     PathSegment path = new PathSegment(previousTarget, newTarget);
     paths.merge(path, Integer.valueOf(1),(currentCount, one) -> currentCount + one);
 
-    currentDirection = Direction.between(newTarget, previousTarget);
+    currentDirection = previousTarget.equals(newTarget)
+      ? currentDirection
+      : Direction.between(newTarget, previousTarget);
   }
 
   protected void updateTarget() {
-    CellIndex lastTarget = target;
-
-    ArrayList<CellIndex> targetCells = grid.getAdjacentCells(lastTarget);
-    ArrayList<CellIndex> unvisitedTargetCells = (ArrayList<CellIndex>)targetCells.clone();
-    unvisitedTargetCells.removeIf(cell -> grid.cells[cell.x][cell.y][cell.z].visited);
-
-    if (unvisitedTargetCells.size() > 0) {
-      setTarget(unvisitedTargetCells.get(int(random(unvisitedTargetCells.size()))));
-      route = null;
-      return;
-    }
-
-    // If there are no adjacent cells and we're already on a fixed route, follow that route.
-    if (route != null) {
-      setTarget(route.removeLast());
-      if (route.size() == 0) {
-        route = null;
-      }
-
-      return;
-    }
-
-    // If there's no route, create a new one to the nearest unvisted cell.
-    CellIndex end = findClosestUnvistedCell(lastTarget);
-    route = grid.getPathBetweenCells(lastTarget, end);
-    setTarget(route.removeLast());
-
-    // If there are no unvisited adjacent cells,
-    // prefer maintaining the current direction.
-    // If that's not possible, pick a direction at random.
-    // if (currentDirection != null && random(1) > 0.5) {
-    //   Optional<CellIndex> sameDirectionCell = grid.getAdjacentCell(lastTarget, currentDirection);
-
-    //   if (sameDirectionCell.isPresent()) {
-    //     setTarget(sameDirectionCell.get());
-    //     return;
-    //   }
-    // }
-
-    // setTarget(targetCells.get(int(random(targetCells.size()))));
+    throw new RuntimeException("`updateTarget` must be overridden by a base class.");
   }
 
   void move() {
@@ -114,32 +80,12 @@ abstract class Agent {
     PVector direction = PVector.sub(targetVector, position);
     direction.normalize();
 
-    float distance = min(PVector.dist(targetVector, position), SPEED);
+    float distance = min(PVector.dist(targetVector, position), speed);
     position.add(direction.mult(distance));
   }
 
-  void drawPath() {
-    pushMatrix();
-    // Translate to centre of cell.
-    translate(cellSize / 2, cellSize / 2, cellSize / 2);
-
-    colorMode(HSB);
-    paths.forEach((path, count) -> {
-      stroke(count * 10, 255, 255);
-      strokeWeight(3);
-      line(
-        path.start.x * cellSize,
-        path.start.y * cellSize,
-        path.start.z * cellSize,
-        path.end.x * cellSize,
-        path.end.y * cellSize,
-        path.end.z * cellSize
-      );
-      strokeWeight(1);
-    });
-    colorMode(RGB);
-
-    popMatrix();
+  protected void drawPath() {
+    throw new RuntimeException("`drawPath` must be overridden by a base class.");
   }
 
   protected void drawAgent() {
@@ -147,9 +93,11 @@ abstract class Agent {
   }
 
   void draw() {
-    // Translate to centre of cell.
     pushMatrix();
+    // Translate to centre of cell.
     translate(cellSize / 2, cellSize / 2, cellSize / 2);
+
+    pushMatrix();
     translate(position.x, position.y, position.z);
     drawAgent();
     popMatrix();
@@ -157,5 +105,7 @@ abstract class Agent {
     if (drawPath) {
       drawPath();
     }
+
+    popMatrix();
   }
 }
