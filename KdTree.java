@@ -302,6 +302,15 @@ public class KdTree<T extends KdTree.XYZPoint> implements Iterable<T> {
     return true;
   }
 
+  public int size() {
+    if (root == null) {
+      return 0;
+    }
+
+    // getTree returns the nodes in the subtree *excluding* the root.
+    return getTree(root).size() + 1;
+  }
+
   /**
   * Gets the (sub) tree rooted at root.
   *
