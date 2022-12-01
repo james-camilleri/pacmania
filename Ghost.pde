@@ -8,7 +8,7 @@ class Ghost extends Agent {
   
   Ghost(Grid _grid, CellIndex start) {
     super(_grid, start);
-    speed = 3;
+    speed = 3 * random(1, 1.2);
   }
   
   protected void updateTarget() {
