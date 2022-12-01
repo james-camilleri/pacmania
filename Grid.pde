@@ -1,3 +1,5 @@
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.function.Predicate;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +16,10 @@ class Grid {
   int scale;
   Cell[][][] cells;
   KdTree unvistedCells;
+
+  // This needs to be here because Processing actually
+  // converts all this into an inner class.
+  float visitedId;
 
   Grid(int _size, int _scale) {
     size = _size;
@@ -41,8 +47,6 @@ class Grid {
     }
 
     unvistedCells = new KdTree(cellIndices);
-    println(unvistedCells);
-    println(unvistedCells.size());
 
     generateMaze();
   }
@@ -146,13 +150,63 @@ class Grid {
     return adjacent.size() == 0 ? Optional.empty() : Optional.of(adjacent.get(0));
   }
 
+  Deque<CellIndex> getPathBetweenCells(CellIndex start, CellIndex end) {
+    Deque<CellIndex> path = new ArrayDeque<CellIndex>();
+    CellIndex nextCellIndex = start;
+
+    // Generate a new random ID to mark the cells as visited.
+    float _visitedId = random(1);
+    while(_visitedId == visitedId) {
+      _visitedId = random(1);
+    }
+    visitedId = _visitedId;
+
+    while (!nextCellIndex.equals(end)) {
+      if (cells[nextCellIndex.x][nextCellIndex.y][nextCellIndex.z].searchVisitId != visitedId) {
+        cells[nextCellIndex.x][nextCellIndex.y][nextCellIndex.z].searchVisitId = visitedId;
+        path.addFirst(nextCellIndex);
+      }
+
+      List<CellIndex> adjacentCells = getAdjacentCells(nextCellIndex);
+      adjacentCells.removeIf(
+        cellIndex -> cells[cellIndex.x][cellIndex.y][cellIndex.z].searchVisitId == visitedId
+      );
+
+      if (adjacentCells.size() == 0) {
+        path.removeFirst();
+        nextCellIndex = path.peekFirst();
+
+        continue;
+      }
+
+      nextCellIndex = adjacentCells.get(0);
+    }
+
+    path.addFirst(nextCellIndex);
+
+    // Remove the starting cell from the path.
+    path.removeLast();
+    return path;
+  }
+
+  void debugXY() {
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        var cell = cells[x][y][0];
+        var fill = cell.searchVisitId == visitedId ? "X" : " ";
+        print("[" + fill + "]");
+      }
+      println();
+    }
+    println();
+  }
+
   void draw() {
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
         for (int z = 0; z < depth; z++) {
           pushMatrix();
           translate(x * scale, y * scale, z * scale);
-          // println(x * scale + ", " + y * scale + ", " + z * scale);
           cells[x][y][z].draw();
           popMatrix();
         }

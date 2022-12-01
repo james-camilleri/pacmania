@@ -10,6 +10,13 @@ class Cell {
   float coinSize = 3;
   int opacity = 0;
   
+  // We need to mark cells as visited for our Depth-First Search. In order to
+  // avoid cloning the entire grid and/or resetting an additional flag on each
+  // one (Java objects are linked by reference so we'll always have reference
+  // to the same cell), pick a random number and use that to mark the visited
+  // status of the current search.
+  float searchVisitId = 0;
+  
   Cell(float _size) {
     size = _size;
     walls = generateWalls();
