@@ -2,9 +2,9 @@ import peasy.*;
 
 final int WIDTH = 1920;
 final int HEIGHT = 1080;
-final int GRID_SIZE = 7;
+final int GRID_SIZE = 5;
 final int GRID_SCALE = 100;
-final boolean GRID_FLAT = true;
+final boolean GRID_FLAT = false;
 
 PeasyCam camera;
 Grid grid = new Grid(GRID_SIZE, GRID_SCALE, GRID_FLAT);
@@ -14,6 +14,8 @@ Ghost[] ghosts = new Ghost[int(pow(GRID_SIZE, GRID_FLAT ? 2 : 3)) / 10];
 boolean drawGhosts = true;
 boolean drawFill = true;
 boolean drawWalls = true;
+boolean record = false;
+int recordingNumber = 0;
 
 void settings() {
   size(WIDTH, HEIGHT, P3D);
@@ -50,6 +52,13 @@ void keyPressed() {
   if (key == 'f') {
     drawFill = !drawFill;
   }
+  
+  if (key == 'r') {
+    record = !record;
+    if (record) {
+      recordingNumber++;
+    }
+  }
 }
 
 void draw() {
@@ -67,4 +76,8 @@ void draw() {
   
   pacman.move();
   pacman.draw();
+  
+  if (record) {
+    saveFrame("render\\" + recordingNumber + "\\pacman-####.png");
+  }
 }
