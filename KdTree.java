@@ -337,7 +337,7 @@ public class KdTree<T extends KdTree.XYZPoint> implements Iterable<T> {
   * @return Collection of T neighbors.
   */
   @SuppressWarnings("unchecked")
-    public Collection<T> nearestNeighbourSearch(int K, T value) {
+  public Collection<T> nearestNeighbourSearch(int K, T value) {
     if (value == null || root == null)
       return Collections.EMPTY_LIST;
 
@@ -586,7 +586,10 @@ public class KdTree<T extends KdTree.XYZPoint> implements Iterable<T> {
     */
     @Override
     public int compareTo(KdNode o) {
-      return compareTo(depth, k, this.id, o.id);
+      // Fix broken comparison function:
+      // https://github.com/phishman3579/java-algorithms-implementation/pull/159
+      int depthCompare = Integer.compare(this.depth, o.depth);
+      return depthCompare != 0 ? depthCompare : this.id.compareTo(o.id);
     }
 
     /**
