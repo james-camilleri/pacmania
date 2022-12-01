@@ -6,7 +6,6 @@ class Cell {
   Map<Direction, float[]> walls;
   boolean visited = false;
   boolean hasCoin = true;
-  // float coinSize = random(1, 4);
   float coinSize = 3;
   int opacity = 0;
   
@@ -64,16 +63,15 @@ class Cell {
     
     if (!visited) {
       noStroke();
-      fill(255, 0, 0, 255);
+      fill(255, 0, 170, 200);
       
-      // coinSize = coinSize >= 3 ? 1 : coinSize + 0.1;
       sphere(coinSize);
     }
   }
   
   void drawWalls() {
     walls.values().forEach(wall -> {
-      stroke(255, 127, 0, 10);
+      stroke(0, 0, 0, 10);
       fill(255, 255, 255, 5);
       
       pushMatrix();

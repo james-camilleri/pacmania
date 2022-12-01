@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 class Ghost extends Agent {
+  float hue = random(100, 200);
+  
   Ghost(Grid _grid, CellIndex start) {
     super(_grid, start);
     speed = 3;
@@ -29,8 +31,20 @@ class Ghost extends Agent {
   }
   
   protected void drawAgent() {
-    fill(255, 30, 30, 255);
     noStroke();
-    sphere(cellSize / 4);
+    
+    colorMode(HSB);
+    for (int i = 0; i < 50; i++) {
+      fill(hue * random(0.9, 1.2), 200, 200, 50);
+      
+      pushMatrix();
+      rotateX(random(TWO_PI));
+      rotateY(random(TWO_PI));
+      rotateZ(random(TWO_PI));
+      translate(random( -(cellSize / 5),(cellSize / 5)), 0, 0);
+      sphere(cellSize / 30);
+      popMatrix();
+    }
+    colorMode(RGB);
   }
 }

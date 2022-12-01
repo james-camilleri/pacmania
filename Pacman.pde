@@ -92,8 +92,11 @@ class Pacman extends Agent {
   protected void drawPath() {
     colorMode(HSB);
     paths.forEach((path, count) -> {
-      stroke(count * 10, 255, 255);
-      strokeWeight(3);
+      int hue = min(count * 7, 70);
+      int saturation = hue > 50 ? min(255 - count * 2, 50) : 255;
+      
+      stroke(hue, saturation, 255);
+      strokeWeight(3 + (count * 0.75));
       line(
         path.start.x * cellSize,
         path.start.y * cellSize,
@@ -102,7 +105,19 @@ class Pacman extends Agent {
         path.end.y * cellSize,
         path.end.z * cellSize
        );
-      strokeWeight(1);
+      strokeWeight(0);
+      
+      pushMatrix();
+      translate(path.start.x * cellSize, path.start.y * cellSize, path.start.z * cellSize);
+      fill(0, 0, 255);
+      sphere(5);
+      popMatrix();
+      
+      pushMatrix();
+      translate(path.end.x * cellSize, path.end.y * cellSize, path.end.z * cellSize);
+      fill(0, 0, 255);
+      sphere(5);
+      popMatrix();
     });
     colorMode(RGB);
   }
