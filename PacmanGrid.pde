@@ -1,10 +1,12 @@
 import peasy.*;
+import java.net.URL;
+import java.net.URISyntaxException;
 
 final int WIDTH = 1920;
 final int HEIGHT = 1080;
-final int GRID_SIZE = 5;
+final int GRID_SIZE = 4;
 final int GRID_SCALE = 100;
-final boolean GRID_FLAT = false;
+final boolean GRID_FLAT = true;
 
 PeasyCam camera;
 Grid grid = new Grid(GRID_SIZE, GRID_SCALE, GRID_FLAT);
@@ -14,8 +16,9 @@ Ghost[] ghosts = new Ghost[int(pow(GRID_SIZE, GRID_FLAT ? 2 : 3)) / 10];
 boolean drawGhosts = true;
 boolean drawFill = true;
 boolean drawWalls = true;
+boolean pause = true;
 boolean record = false;
-int recordingNumber = 0;
+int recordingNumber = getStartFolder();
 
 void settings() {
   size(WIDTH, HEIGHT, P3D);
@@ -53,12 +56,35 @@ void keyPressed() {
     drawFill = !drawFill;
   }
   
+  if (key == 'p' || key == ' ') {
+    pause = !pause;
+  }
+  
   if (key == 'r') {
     record = !record;
     if (record) {
       recordingNumber++;
     }
   }
+}
+
+int getStartFolder() {
+  int recordingNumber = 1;
+  
+  try {
+    URL url = getClass().getResource("PacmanGrid.class");
+    String[] pathSegments = url.toURI().getPath().split("/");
+    //....../out/PacmanGrid.class
+    String path = String.join("\\", Arrays.copyOfRange(pathSegments, 1, pathSegments.length - 2));
+    File file = new File(path + "\\render\\" + Integer.toString(recordingNumber));
+    
+    while(file.exists()) {
+      recordingNumber++;
+      file = new File(path + "\\render\\" + Integer.toString(recordingNumber));
+    }
+  } catch(URISyntaxException exception) {}
+  
+  return recordingNumber;
 }
 
 void draw() {
@@ -69,12 +95,15 @@ void draw() {
   for (int i = 0; i < ghosts.length; i++) {
     ghosts[i].move();
     
-    if (drawGhosts) {
+    if (drawGhosts && !pause) {
       ghosts[i].draw();
     }
   }
   
-  pacman.move();
+  if (!pause) {
+    pacman.move();
+  }
+  
   pacman.draw();
   
   if (record) {
