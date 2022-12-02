@@ -62,7 +62,7 @@ void keyPressed() {
   
   if (key == 'r') {
     record = !record;
-    if (record) {
+    if (!record) {
       recordingNumber++;
     }
   }
@@ -93,9 +93,11 @@ void draw() {
   grid.draw(drawWalls, drawFill);
   
   for (int i = 0; i < ghosts.length; i++) {
-    ghosts[i].move();
+    if (!pause) {
+      ghosts[i].move();
+    }
     
-    if (drawGhosts && !pause) {
+    if (drawGhosts) {
       ghosts[i].draw();
     }
   }
